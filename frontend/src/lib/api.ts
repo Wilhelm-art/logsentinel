@@ -5,20 +5,26 @@ import {
   HistoryItem,
 } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "";
 
 async function apiFetch<T>(
   path: string,
   options?: RequestInit
 ): Promise<T> {
   const url = `${API_BASE}${path}`;
-  const res = await fetch(url, {
-    ...options,
-    headers: {
-      ...options?.headers,
-    },
-    credentials: "include",
-  });
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...options,
+      headers: {
+        ...options?.headers,
+      },
+      credentials: "include",
+    });
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    throw new Error(`Network error or server unreachable: ${errorMsg}`);
+  }
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));

@@ -115,6 +115,7 @@ export default function Sidebar() {
           <div className={styles.userSection}>
             <div className={styles.userInfo}>
               {session.user.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={session.user.image}
                   alt="Avatar"

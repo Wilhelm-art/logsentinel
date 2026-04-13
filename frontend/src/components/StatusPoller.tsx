@@ -42,11 +42,11 @@ export default function StatusPoller({ taskId, onComplete }: StatusPollerProps) 
         return true;
       }
       return false;
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
       return true;
     }
-  }, [taskId, session, onComplete]);
+  }, [taskId, session?.user?.email, onComplete]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;

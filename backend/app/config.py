@@ -29,10 +29,11 @@ class Settings(BaseSettings):
     ABUSEIPDB_API_KEY: Optional[str] = None
     ABUSEIPDB_ENABLED: bool = True
 
-    # ── Auth ──
+    # ── Auth & CORS ──
     AUTH_SECRET: str = ""
     ALLOWED_EMAILS: str = ""
     NEXTAUTH_URL: str = "http://localhost:3000"
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # ── Limits ──
     MAX_FILE_SIZE_MB: int = 10

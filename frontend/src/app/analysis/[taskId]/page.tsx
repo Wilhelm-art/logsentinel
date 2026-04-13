@@ -16,7 +16,7 @@ export default function AnalysisPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const email = session?.user?.email || undefined;
 
@@ -28,20 +28,20 @@ export default function AnalysisPage() {
         const reportData = await getReport(taskId, email);
         setReport(reportData);
       }
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
-  };
+  }, [session?.user?.email, taskId]);
 
   useEffect(() => {
     if (session) fetchData();
-  }, [session, taskId]);
+  }, [session, fetchData]);
 
-  const handleComplete = () => {
+  const handleComplete = useCallback(() => {
     fetchData();
-  };
+  }, [fetchData]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);

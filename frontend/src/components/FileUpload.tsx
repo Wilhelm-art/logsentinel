@@ -54,8 +54,9 @@ export default function FileUpload() {
         session?.user?.email || undefined
       );
       router.push(`/analysis/${response.task_id}`);
-    } catch (err: any) {
-      setError(err.message || "Upload failed. Please try again.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Upload failed. Please try again.";
+      setError(msg);
       setUploading(false);
     }
   };

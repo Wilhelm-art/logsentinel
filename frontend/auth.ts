@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
+
 import GitHub from "next-auth/providers/github";
 
 const allowedEmails = process.env.ALLOWED_EMAILS
@@ -8,18 +8,15 @@ const allowedEmails = process.env.ALLOWED_EMAILS
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
+
     GitHub({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
+      clientId: process.env.AUTH_GITHUB_ID || "mock_id",
+      clientSecret: process.env.AUTH_GITHUB_SECRET || "mock_secret",
     }),
   ],
   pages: {
     signIn: "/auth/signin",
-    error: "/auth/error",
+    error: "/auth/signin", // Redirect to sign-in page to display errors (handles 'Configuration')
   },
   callbacks: {
     async signIn({ user }) {

@@ -77,6 +77,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://frontend:3000",
         settings.NEXTAUTH_URL,
+        settings.FRONTEND_URL,
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -88,7 +89,14 @@ app.add_middleware(
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
     if request.url.path == "/api/v1/logs/upload" and request.method == "POST":
-        client_ip = request.headers.get("X-Real-IP", request.client.host if request.client else "unknown")
+        # Extract IP, with fallback to proxy headers or 127.0.0.1
+        client_ip = request.headers.get("X-Forwarded-For") or request.headers.get("X-Real-IP")
+        if not client_ip:
+            client_ip = request.client.host if request.client else "127.0.0.1"
+            
+        # Handle X-Forwarded-For comma-separated lists
+        client_ip = client_ip.split(",")[0].strip()
+
         if not upload_limiter.is_allowed(client_ip):
             return JSONResponse(
                 status_code=429,
