@@ -6,6 +6,23 @@ import { useSession } from "next-auth/react";
 import { uploadLogFile } from "@/lib/api";
 import styles from "./FileUpload.module.css";
 
+const ALLOWED_EXTENSIONS = [".log", ".txt", ".jsonl", ".json"];
+const MAX_SIZE_MB = 10;
+
+const validateFile = (file: File): string | null => {
+  const ext = "." + file.name.split(".").pop()?.toLowerCase();
+  if (!ALLOWED_EXTENSIONS.includes(ext)) {
+    return `Invalid file type "${ext}". Allowed: ${ALLOWED_EXTENSIONS.join(", ")}`;
+  }
+  if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+    return `File too large. Maximum size is ${MAX_SIZE_MB}MB.`;
+  }
+  if (file.size === 0) {
+    return "File is empty.";
+  }
+  return null;
+};
+
 export default function FileUpload() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -14,23 +31,6 @@ export default function FileUpload() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-  const ALLOWED_EXTENSIONS = [".log", ".txt", ".jsonl", ".json"];
-  const MAX_SIZE_MB = 10;
-
-  const validateFile = (file: File): string | null => {
-    const ext = "." + file.name.split(".").pop()?.toLowerCase();
-    if (!ALLOWED_EXTENSIONS.includes(ext)) {
-      return `Invalid file type "${ext}". Allowed: ${ALLOWED_EXTENSIONS.join(", ")}`;
-    }
-    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      return `File too large. Maximum size is ${MAX_SIZE_MB}MB.`;
-    }
-    if (file.size === 0) {
-      return "File is empty.";
-    }
-    return null;
-  };
 
   const handleFile = useCallback((file: File) => {
     setError(null);

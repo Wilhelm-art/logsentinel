@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { getTaskStatus } from "@/lib/api";
 import { TaskStatus } from "@/lib/types";
@@ -22,7 +21,6 @@ interface StatusPollerProps {
 
 export default function StatusPoller({ taskId, onComplete }: StatusPollerProps) {
   const { data: session } = useSession();
-  const router = useRouter();
   const [status, setStatus] = useState<TaskStatus>("pending");
   const [stage, setStage] = useState("QUEUED");
   const [error, setError] = useState<string | null>(null);
