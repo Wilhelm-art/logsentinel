@@ -1,0 +1,152 @@
+.reportPage {
+  max-width: 1100px;
+}
+
+/* ── Header ── */
+.reportHeader {
+  margin-bottom: 2rem;
+}
+
+.reportHeader h1 {
+  margin-bottom: 0.5rem;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+/* ── Severity Grid ── */
+.severityGrid {
+  margin-bottom: 2rem;
+}
+
+/* ── Summary ── */
+.summaryCard {
+  padding: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+.summaryCard h2 {
+  margin-bottom: 1rem;
+  font-size: 1.125rem;
+}
+
+.summaryContent p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.summaryContent p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Incidents ── */
+.incidentsSection {
+  margin-bottom: 2.5rem;
+}
+
+.incidentsSection h2 {
+  margin-bottom: 1rem;
+}
+
+.incidentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.incidentCard {
+  padding: 1.5rem;
+}
+
+.incidentHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.attackType {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+}
+
+.incidentMeta {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.metaLabel {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin-bottom: 0.25rem;
+}
+
+.endpoint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8125rem;
+  color: var(--accent-secondary);
+  background: var(--bg-tertiary);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.actorHash {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8125rem;
+  color: var(--accent-primary-light);
+  background: var(--bg-tertiary);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.actorHash:hover {
+  background: var(--bg-hover);
+}
+
+.incidentDesc {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* ── WAF ── */
+.wafSection {
+  margin-bottom: 2rem;
+}
+
+.wafSection h2 {
+  margin-bottom: 1rem;
+}
+
+.wafList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .incidentMeta {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .meta {
+    font-size: 0.75rem;
+  }
+}

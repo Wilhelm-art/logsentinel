@@ -1,0 +1,43 @@
+.dashboard {
+  max-width: 1200px;
+}
+
+.statsGrid {
+  margin-bottom: 2rem;
+}
+
+.quickActions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.uploadBtn {
+  flex: 1;
+  max-width: 300px;
+}
+
+.recentSection {
+  margin-bottom: 2rem;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.sectionHeader h2 {
+  font-size: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .quickActions {
+    flex-direction: column;
+  }
+
+  .uploadBtn {
+    max-width: 100%;
+  }
+}
