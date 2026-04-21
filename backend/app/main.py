@@ -7,12 +7,17 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+import logging
 import time
 from collections import defaultdict
 
 from app.config import settings
 from app.database import engine, Base
 from app.routers import logs, auth
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class RateLimiter:
@@ -46,8 +51,14 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown events."""
     from app import models  # noqa: F401
 
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    try:
+        logger.info("Initializing database tables...")
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize database: {e}")
+        logger.info("Starting app without database initialization (will retry on request)")
 
     yield
 

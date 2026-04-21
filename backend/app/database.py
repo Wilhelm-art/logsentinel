@@ -12,7 +12,15 @@ from app.config import settings
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=False,
-    connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {},
+    pool_pre_ping=True,
+    pool_recycle=300,
+    connect_args={
+        "check_same_thread": False,
+        "command_timeout": 10,
+    } if "sqlite" in settings.DATABASE_URL else {
+        "ssl": True,
+        "command_timeout": 10,
+    },
 )
 
 async_session = async_sessionmaker(
