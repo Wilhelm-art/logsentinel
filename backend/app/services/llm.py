@@ -13,8 +13,6 @@ from app.config import settings
 from app.schemas import SecurityReport
 
 logger = logging.getLogger(__name__)
-
-# ── System Prompt Template ──
 SYSTEM_PROMPT = """You are an elite, Principal Cybersecurity Analyst. Your objective is to analyze the provided web server and application logs to identify security incidents, misconfigurations, and attack vectors.
 
 The logs have been sanitized. Personally Identifiable Information (PII) has been removed. IP addresses have been hashed (e.g., [IP_HASH: XYZ]). Some entries include [THREAT_INTEL] tags—these indicate the IP was flagged by AbuseIPDB.

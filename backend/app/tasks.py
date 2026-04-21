@@ -48,7 +48,6 @@ def analyze_logs(task_id: str, raw_content: str, filename: str):
     db = SyncSession()
 
     try:
-        # ── Step 1: Parse ──
         _update_task_status(db, task_id, TaskStatus.PARSING, "PARSING")
 
         from app.services.parser import LogParser
@@ -65,8 +64,6 @@ def analyze_logs(task_id: str, raw_content: str, filename: str):
             db.commit()
 
         logger.info(f"Parsed {len(entries)} entries from {filename} ({log_format})")
-
-        # ── Step 2: Sample ──
         from app.services.sampler import Sampler
         sampled_count = None
 
@@ -78,8 +75,6 @@ def analyze_logs(task_id: str, raw_content: str, filename: str):
             if task:
                 task.sampled = sampled_count
                 db.commit()
-
-        # ── Step 3: Sanitize ──
         _update_task_status(db, task_id, TaskStatus.SANITIZING, "SANITIZING")
 
         from app.services.sanitizer import Sanitizer
@@ -91,8 +86,6 @@ def analyze_logs(task_id: str, raw_content: str, filename: str):
         gc.collect()
 
         logger.info(f"Sanitized {len(sanitized_entries)} entries, {len(ip_map)} unique IPs")
-
-        # ── Step 4: Enrich ──
         _update_task_status(db, task_id, TaskStatus.ENRICHING, "ENRICHING")
 
         from app.services.threat_intel import ThreatIntelService
@@ -102,8 +95,6 @@ def analyze_logs(task_id: str, raw_content: str, filename: str):
         # Free ip_map (original IPs no longer needed)
         del ip_map
         gc.collect()
-
-        # ── Step 5: LLM Analysis ──
         _update_task_status(db, task_id, TaskStatus.LLM_ANALYSIS, "LLM_ANALYSIS")
 
         from app.services.llm import analyze_logs_with_llm
@@ -113,8 +104,6 @@ def analyze_logs(task_id: str, raw_content: str, filename: str):
         del enriched_entries
         del sanitized_entries
         gc.collect()
-
-        # ── Step 6: Persist Report ──
         elapsed = int(time.time() - start_time)
 
         analysis_report = AnalysisReport(
@@ -142,8 +131,6 @@ def analyze_logs(task_id: str, raw_content: str, filename: str):
             f"Task {task_id} completed in {elapsed}s. "
             f"{len(report.incidents)} incidents found."
         )
-
-        # ── Step 7: Aggressive Cleanup ──
         del report
         del llm_metadata
         del raw_content

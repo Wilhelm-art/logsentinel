@@ -10,32 +10,20 @@ from typing import Optional
 
 class Settings(BaseSettings):
     """Central configuration loaded from environment variables."""
-
-    # ── Database ──
     DATABASE_URL: str = "postgresql+asyncpg://logsentinel:changeme@postgres:5432/logsentinel"
     POSTGRES_USER: str = "logsentinel"
     POSTGRES_PASSWORD: str = "changeme"
     POSTGRES_DB: str = "logsentinel"
-
-    # ── Redis ──
     REDIS_URL: str = "redis://redis:6379/0"
-
-    # ── LLM ──
     LLM_PROVIDER: str = Field(default="gemini", description="gemini or groq")
     GEMINI_API_KEY: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
-
-    # ── Threat Intelligence ──
     ABUSEIPDB_API_KEY: Optional[str] = None
     ABUSEIPDB_ENABLED: bool = True
-
-    # ── Auth & CORS ──
     AUTH_SECRET: str = ""
     ALLOWED_EMAILS: str = ""
     NEXTAUTH_URL: str = "http://localhost:3000"
     FRONTEND_URL: str = "http://localhost:3000"
-
-    # ── Limits ──
     MAX_FILE_SIZE_MB: int = 10
     MAX_LOG_LINES: int = 50000
     SAMPLING_THRESHOLD: int = 10000

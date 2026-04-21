@@ -51,8 +51,6 @@ class Sampler:
         logger.info(
             f"Sampling activated: {original_count} entries → target {target_size}"
         )
-
-        # ── Priority Buckets ──
         priority_1 = []  # Error status codes (4xx, 5xx)
         priority_2 = []  # Unusual HTTP methods
         priority_3 = []  # Suspiciously long URIs
@@ -94,8 +92,6 @@ class Sampler:
 
             if not categorized:
                 normal.append(entry)
-
-        # ── Assemble Sample ──
         sampled = []
         remaining = target_size
 

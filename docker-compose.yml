@@ -1,7 +1,6 @@
 version: "3.9"
 
 services:
-  # ── Reverse Proxy ──
   nginx:
     image: nginx:1.27-alpine
     ports:
@@ -16,8 +15,6 @@ services:
     restart: unless-stopped
     networks:
       - logsentinel
-
-  # ── Next.js Frontend ──
   frontend:
     build:
       context: ./frontend
@@ -31,8 +28,6 @@ services:
     restart: unless-stopped
     networks:
       - logsentinel
-
-  # ── FastAPI Backend ──
   backend:
     build:
       context: ./backend
@@ -58,8 +53,6 @@ services:
     restart: unless-stopped
     networks:
       - logsentinel
-
-  # ── Celery Worker ──
   worker:
     build:
       context: ./backend
@@ -78,8 +71,6 @@ services:
     restart: unless-stopped
     networks:
       - logsentinel
-
-  # ── PostgreSQL ──
   postgres:
     image: postgres:16-alpine
     environment:
@@ -96,8 +87,6 @@ services:
     restart: unless-stopped
     networks:
       - logsentinel
-
-  # ── Redis ──
   redis:
     image: redis:7-alpine
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru

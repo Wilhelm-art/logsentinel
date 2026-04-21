@@ -10,8 +10,6 @@ from typing import Optional
 from py3grok import GrokEnvironment
 
 logger = logging.getLogger(__name__)
-
-# ── Initialize Grok Environment ──
 grok_env = GrokEnvironment()
 
 # Pre-compiled patterns

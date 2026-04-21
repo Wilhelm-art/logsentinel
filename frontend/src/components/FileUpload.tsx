@@ -140,6 +140,9 @@ export default function FileUpload() {
                 e.stopPropagation();
                 setSelectedFile(null);
                 setError(null);
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = "";
+                }
               }}
             >
               ✕

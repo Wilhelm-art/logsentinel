@@ -7,9 +7,6 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 from enum import Enum
-
-
-# ── Enums ──
 class SeverityLevel(str, Enum):
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
@@ -25,9 +22,6 @@ class TaskStatusEnum(str, Enum):
     LLM_ANALYSIS = "llm_analysis"
     COMPLETED = "completed"
     FAILED = "failed"
-
-
-# ── API Responses ──
 class UploadResponse(BaseModel):
     task_id: str
     status: str = "processing"

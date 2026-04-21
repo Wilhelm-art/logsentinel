@@ -14,9 +14,6 @@ from collections import defaultdict
 from app.config import settings
 from app.database import engine, Base
 from app.routers import logs, auth
-
-
-# ── Rate Limiter ──
 class RateLimiter:
     """Simple in-memory IP-based rate limiter."""
 
@@ -42,9 +39,6 @@ class RateLimiter:
 
 
 upload_limiter = RateLimiter(max_requests=10, window_seconds=60)
-
-
-# ── Lifespan ──
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events."""
@@ -57,9 +51,6 @@ async def lifespan(app: FastAPI):
     yield
 
     await engine.dispose()
-
-
-# ── App Factory ──
 app = FastAPI(
     title="LogSentinel API",
     description="AI-Powered Security Log Analyzer",
@@ -69,8 +60,6 @@ app = FastAPI(
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
 )
-
-# ── CORS ──
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -83,9 +72,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-# ── Rate Limiting Middleware ──
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):
     if request.url.path == "/api/v1/logs/upload" and request.method == "POST":
@@ -104,14 +90,8 @@ async def rate_limit_middleware(request: Request, call_next):
             )
     response = await call_next(request)
     return response
-
-
-# ── Health Check ──
 @app.get("/health", tags=["System"])
 async def health_check():
     return {"status": "healthy", "service": "logsentinel-api", "version": "1.0.0"}
-
-
-# ── Mount Routers ──
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(logs.router, prefix="/api/v1/logs", tags=["Logs"])
