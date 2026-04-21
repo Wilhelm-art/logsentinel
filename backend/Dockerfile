@@ -7,7 +7,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# System dependencies for Presidio + spaCy
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
@@ -17,10 +16,8 @@ RUN apt-get update && \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Download spaCy model for Presidio NER
 RUN python -m spacy download en_core_web_sm
 
-# Create non-root user
 RUN groupadd -r logsentinel && useradd -r -g logsentinel logsentinel
 
 COPY . .
@@ -30,4 +27,4 @@ USER logsentinel
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1

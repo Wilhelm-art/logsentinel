@@ -6,24 +6,37 @@ Loads all settings from environment variables with sensible defaults.
 from pydantic_settings import BaseSettings
 from pydantic import Field
 from typing import Optional
+import os
 
 
 class Settings(BaseSettings):
     """Central configuration loaded from environment variables."""
-    DATABASE_URL: str = "postgresql+asyncpg://logsentinel:changeme@postgres:5432/logsentinel"
+
+    DATABASE_URL: str = Field(
+        default="sqlite+aiosqlite:///./logsentinel.db",
+        description="Full async database URL. Set by Railway or via .env"
+    )
     POSTGRES_USER: str = "logsentinel"
     POSTGRES_PASSWORD: str = "changeme"
     POSTGRES_DB: str = "logsentinel"
-    REDIS_URL: str = "redis://redis:6379/0"
+
+    REDIS_URL: str = Field(
+        default="redis://localhost:6379/0",
+        description="Redis broker URL. Set by Railway or via .env"
+    )
+
     LLM_PROVIDER: str = Field(default="gemini", description="gemini or groq")
     GEMINI_API_KEY: Optional[str] = None
     GROQ_API_KEY: Optional[str] = None
+
     ABUSEIPDB_API_KEY: Optional[str] = None
     ABUSEIPDB_ENABLED: bool = True
+
     AUTH_SECRET: str = ""
     ALLOWED_EMAILS: str = ""
     NEXTAUTH_URL: str = "http://localhost:3000"
     FRONTEND_URL: str = "http://localhost:3000"
+
     MAX_FILE_SIZE_MB: int = 10
     MAX_LOG_LINES: int = 50000
     SAMPLING_THRESHOLD: int = 10000
@@ -41,9 +54,12 @@ class Settings(BaseSettings):
     @property
     def sync_database_url(self) -> str:
         """Synchronous DB URL for Alembic & Celery."""
-        if "sqlite+aiosqlite" in self.DATABASE_URL:
-            return self.DATABASE_URL.replace("sqlite+aiosqlite", "sqlite")
-        return self.DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
+        url = self.DATABASE_URL
+        if "sqlite+aiosqlite" in url:
+            return url.replace("sqlite+aiosqlite", "sqlite")
+        if "postgresql+asyncpg" in url:
+            return url.replace("postgresql+asyncpg://", "postgresql://")
+        return url
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 

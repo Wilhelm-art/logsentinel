@@ -1,6 +1,6 @@
 """
 LogSentinel — Database Engine & Session
-Async SQLAlchemy with asyncpg driver.
+Async SQLAlchemy with asyncpg or aiosqlite driver.
 """
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
@@ -12,6 +12,7 @@ from app.config import settings
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=False,
+    connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {},
 )
 
 async_session = async_sessionmaker(
