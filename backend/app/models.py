@@ -14,16 +14,7 @@ import enum
 from app.database import Base
 
 
-def _uuid_column(**kwargs):
-    """
-    Returns a UUID primary key column compatible with both
-    PostgreSQL (native UUID type) and SQLite (String fallback).
-    """
-    from app.config import settings
-    if "postgresql" in settings.DATABASE_URL:
-        from sqlalchemy.dialects.postgresql import UUID
-        return Column(UUID(as_uuid=True), **kwargs)
-    return Column(String(36), **kwargs)
+
 
 
 class TaskStatus(str, enum.Enum):

@@ -4,8 +4,8 @@ Loads all settings from environment variables with sensible defaults.
 """
 
 from pydantic_settings import BaseSettings
-from pydantic import Field
-from typing import Optional
+from pydantic import Field, field_validator
+from typing import Optional, Any
 import os
 
 
@@ -16,6 +16,20 @@ class Settings(BaseSettings):
         default="sqlite+aiosqlite:///./logsentinel.db",
         description="Full async database URL. Set by Railway or via .env"
     )
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def normalize_database_url(cls, v: Any) -> Any:
+        if not isinstance(v, str):
+            return v
+        
+        # Railway provides postgres://, asyncpg needs postgresql+asyncpg://
+        if v.startswith("postgres://"):
+            v = v.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif v.startswith("postgresql://") and "+asyncpg" not in v:
+            v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+            
+        return v
     POSTGRES_USER: str = "logsentinel"
     POSTGRES_PASSWORD: str = "changeme"
     POSTGRES_DB: str = "logsentinel"
