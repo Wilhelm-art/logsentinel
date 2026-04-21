@@ -5,8 +5,19 @@ import {
   HistoryItem,
 } from "./types";
 
-const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "";
+let API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || "";
 
+// If we are in the browser, use relative paths to trigger Vercel's API proxy rewrites
+// This avoids CORS issues and double-domain cookie issues.
+if (typeof window !== "undefined") {
+  API_BASE = "";
+} else if (API_BASE && !API_BASE.startsWith("http")) {
+  // If running on the server and protocol is missing, auto-fix
+  API_BASE = `https://${API_BASE}`;
+}
+
+// Strip trailing slash if present
+API_BASE = API_BASE.replace(/\/+$/, "");
 async function apiFetch<T>(
   path: string,
   options?: RequestInit
