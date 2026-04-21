@@ -8,11 +8,22 @@ from sqlalchemy import (
     Column, String, DateTime, Text, Integer, Enum as SAEnum,
     ForeignKey, JSON, BigInteger
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import enum
 
 from app.database import Base
+
+
+def _uuid_column(**kwargs):
+    """
+    Returns a UUID primary key column compatible with both
+    PostgreSQL (native UUID type) and SQLite (String fallback).
+    """
+    from app.config import settings
+    if "postgresql" in settings.DATABASE_URL:
+        from sqlalchemy.dialects.postgresql import UUID
+        return Column(UUID(as_uuid=True), **kwargs)
+    return Column(String(36), **kwargs)
 
 
 class TaskStatus(str, enum.Enum):
@@ -28,20 +39,19 @@ class TaskStatus(str, enum.Enum):
 class AnalysisTask(Base):
     __tablename__ = "analysis_tasks"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     status = Column(SAEnum(TaskStatus), default=TaskStatus.PENDING, nullable=False)
     progress_stage = Column(String(50), default="QUEUED")
-    file_hash = Column(String(64), nullable=False)  # SHA-256
+    file_hash = Column(String(64), nullable=False)
     original_filename = Column(String(255), nullable=False)
     file_size = Column(BigInteger, nullable=False)
-    log_format = Column(String(20), nullable=True)  # nginx, apache, jsonl
+    log_format = Column(String(20), nullable=True)
     line_count = Column(Integer, nullable=True)
-    sampled = Column(Integer, nullable=True)  # lines after sampling
+    sampled = Column(Integer, nullable=True)
     error_message = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     completed_at = Column(DateTime(timezone=True), nullable=True)
 
-    # Relationship
     report = relationship("AnalysisReport", back_populates="task", uselist=False, cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -51,8 +61,8 @@ class AnalysisTask(Base):
 class AnalysisReport(Base):
     __tablename__ = "analysis_reports"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    task_id = Column(UUID(as_uuid=True), ForeignKey("analysis_tasks.id", ondelete="CASCADE"), nullable=False, unique=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    task_id = Column(String(36), ForeignKey("analysis_tasks.id", ondelete="CASCADE"), nullable=False, unique=True)
     summary = Column(Text, nullable=True)
     incidents = Column(JSON, default=list)
     waf_suggestions = Column(JSON, default=list)
@@ -62,7 +72,6 @@ class AnalysisReport(Base):
     processing_time_seconds = Column(Integer, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-    # Relationship
     task = relationship("AnalysisTask", back_populates="report")
 
     def __repr__(self):

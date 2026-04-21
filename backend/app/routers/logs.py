@@ -74,7 +74,7 @@ async def upload_log_file(
     file_hash = hashlib.sha256(content).hexdigest()
 
     # Create task record
-    task_id = uuid.uuid4()
+    task_id = str(uuid.uuid4())
     task = AnalysisTask(
         id=task_id,
         status=TaskStatus.PENDING,
@@ -86,9 +86,8 @@ async def upload_log_file(
     db.add(task)
     await db.flush()
 
-    # Dispatch background task instead of Celery for local environments
     from app.tasks import analyze_logs
-    background_tasks.add_task(analyze_logs, str(task_id), content.decode("utf-8", errors="replace"), filename)
+    background_tasks.add_task(analyze_logs, task_id, content.decode("utf-8", errors="replace"), filename)
 
     return UploadResponse(
         task_id=str(task_id),

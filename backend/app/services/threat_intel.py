@@ -8,7 +8,6 @@ import logging
 from typing import Optional
 
 import httpx
-import redis
 
 from app.config import settings
 
@@ -22,12 +21,13 @@ class ThreatIntelService:
     """Queries AbuseIPDB and enriches log entries with threat scores."""
 
     def __init__(self):
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client = None
         self._init_redis()
 
     def _init_redis(self):
         """Initialize Redis connection for caching."""
         try:
+            import redis
             self.redis_client = redis.from_url(
                 settings.REDIS_URL,
                 decode_responses=True,
